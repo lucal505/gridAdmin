@@ -1,25 +1,25 @@
 # gridAdmin
 
-Server + controller pentru managementul de la distanta al unui grid de statii Linux via SSH.
+Server + controller for remote management of a Linux station grid via SSH.
 
-Serverul (`gridServer`) ruleaza pe o masina cu acces la retea si se ocupa de conexiunile SSH catre statii. Controllerul (`gridController`) se conecteaza la server si permite trimiterea de comenzi catre statii selectate.
+The server (`gridServer`) runs on a machine with network access and handles SSH connections to the stations. The controller (`gridController`) connects to the server and allows sending commands to selected stations.
 
-## Functionalitati
+## Features
 
-- Verificare stare statii (online/offline)
+- Check station status (online/offline)
 - Wake on LAN
-- Shutdown remote
-- Executie comenzi bash custom pe una sau mai multe statii simultan
+- Remote shutdown
+- Execute custom bash commands on one or more stations simultaneously
 
 ## Getting Started
 
-### 1. Clonare
+### 1. Clone
 ```bash
 git clone https://github.com/lucal505/gridAdmin.git
 cd gridAdmin
 ```
 
-### 2. Instalare dependinte de sistem
+### 2. Install system dependencies
 ```bash
 sudo apt install gcc libsqlite3-dev sshpass
 ```
@@ -29,30 +29,30 @@ sudo apt install gcc libsqlite3-dev sshpass
 make
 ```
 
-### 4. Configurare (vezi sectiunea de mai jos)
+### 4. Configure (see section below)
 
-### 5. Rulare
+### 5. Run
 ```bash
-./gridServer       # pe masina server
-./gridController   # pe masina client
+./gridServer       # on the server machine
+./gridController   # on the client machine
 ```
 
-## Configurare
+## Configuration
 
-### 1. Credentiale SSH
-In `include/data.h` sunt definite credentialele folosite pentru conexiunile SSH catre statii:
+### 1. SSH Credentials
+The credentials used for SSH connections to the stations are defined in `include/data.h`:
 
 ```c
 #define USER "test"
 #define PASS "testpass"
 ```
 
-Inlocuieste `test` si `testpass` cu userul si parola comune ale statiilor din retea.
+Replace `test` and `testpass` with the common username and password of the stations in your network.
 
-### 2. Baza de date (grid.db)
-`db/grid.db` este o baza de date SQLite care contine lista statiilor din grid. Trebuie populata cu datele reale ale statiilor tale inainte de a rula serverul.
+### 2. Database (grid.db)
+`db/grid.db` is a SQLite database containing the list of stations in the grid. It must be populated with your actual station data before running the server.
 
-Schema tabelului:
+Table schema:
 ```sql
 CREATE TABLE hosts (
     id      INTEGER PRIMARY KEY,
@@ -62,25 +62,25 @@ CREATE TABLE hosts (
 );
 ```
 
-Exemplu de populare:
+Example entries:
 ```sql
 INSERT INTO hosts (id, ip, mac, name) VALUES (1, '192.168.1.101', 'AA:BB:CC:DD:EE:FF', 'station-01');
 INSERT INTO hosts (id, ip, mac, name) VALUES (2, '192.168.1.102', '11:22:33:44:55:66', 'station-02');
 ```
 
-Poti edita baza de date cu:
+You can edit the database with:
 ```bash
 sqlite3 db/grid.db
 ```
 
-### 3. IP-ul serverului
-In `src/gridController.c` este definit IP-ul la care controllerul se conecteaza:
+### 3. Server IP
+The IP address the controller connects to is defined in `src/gridController.c`:
 
 ```c
 #define SERVER_IP "127.0.0.1"
 ```
 
-Schimba-l cu IP-ul masinii pe care ruleaza `gridServer` daca nu rulezi totul local.
+Change it to the IP of the machine running `gridServer` if you are not running everything locally.
 
 ## Build
 
@@ -88,44 +88,44 @@ Schimba-l cu IP-ul masinii pe care ruleaza `gridServer` daca nu rulezi totul loc
 make
 ```
 
-Sau separat:
+Or individually:
 ```bash
 make gridServer
 make gridController
 ```
 
-Pentru a sterge binarele:
+To remove compiled binaries:
 ```bash
 make clean
 ```
 
-## Rulare
+## Running
 
-Pe masina server (cu acces la retea):
+On the server machine (with network access):
 ```bash
 ./gridServer
 ```
 
-Pe masina client (de pe orice masina din retea):
+On the client machine (from anywhere in the network):
 ```bash
 ./gridController
 ```
 
-## Structura proiectului
+## Project Structure
 
 ```
 gridAdmin/
 ├── src/
-│   ├── gridServer.c        # server principal
-│   └── gridController.c    # client CLI
+│   ├── gridServer.c        # main server
+│   └── gridController.c    # CLI client
 ├── include/
-│   ├── comms.h             # trimitere/receptie mesaje TCP
-│   ├── data.h              # structuri de date si constante
-│   ├── handlers.h          # handlere pentru clienti si conexiuni SSH
-│   ├── manage_connections.h# initializare/inchidere conexiuni SSH
-│   └── misc.h              # utilitare (WoL, validare ID)
+│   ├── comms.h             # TCP message send/receive
+│   ├── data.h              # data structures and constants
+│   ├── handlers.h          # client and SSH connection handlers
+│   ├── manage_connections.h# SSH connection init/teardown
+│   └── misc.h              # utilities (WoL, ID validation)
 ├── db/
-│   └── grid.db             # baza de date SQLite cu statiile din grid
+│   └── grid.db             # SQLite database with grid stations
 ├── Makefile
 └── README.md
 ```
